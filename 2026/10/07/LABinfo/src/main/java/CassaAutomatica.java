@@ -1,85 +1,90 @@
 public class CassaAutomatica {
-    private double totale;
-    private double importoRicevuto;
+    private static final double PAGAMENTO_INSUFFICIENTE = -1.0;
+
+    // Gli importi sono memorizzati in centesimi
+    private long totaleCentesimi;
+    private long importoRicevutoCentesimi;
 
     public CassaAutomatica() {
-        this.totale = 0.0;
-        this.importoRicevuto = 0.0;
+        totaleCentesimi = 0;
+        importoRicevutoCentesimi = 0;
     }
 
     /**
-     * Registra il prezzo di un singolo articolo incrementando il totale.
+     * Registra il prezzo di un singolo articolo.
+     * I prezzi non validi vengono ignorati.
      */
     public void registraPrezzo(double prezzo) {
-        if (prezzo > 0) {
-            this.totale += prezzo;
+        if (isImportoValido(prezzo)) {
+            totaleCentesimi += convertiInCentesimi(prezzo);
         }
     }
 
     /**
-     * Restituisce il totale cumulato della spesa attuale.
+     * Restituisce il totale della spesa in euro.
      */
     public double getTotale() {
-        return this.totale;
+        return totaleCentesimi / 100.0;
     }
 
     /**
-     * Riceve un importo inserito dal cliente per il pagamento.
+     * Riceve un pagamento dal cliente.
+     * Gli importi non validi vengono ignorati.
      */
     public void riceviPagamento(double importo) {
-        if (importo > 0) {
-            this.importoRicevuto += importo;
+        if (isImportoValido(importo)) {
+            importoRicevutoCentesimi += convertiInCentesimi(importo);
         }
     }
 
     /**
-     * Calcola e restituisce il resto.
-     * Restituisce -1.0 se l'importo versato non è sufficiente a coprire il totale.
-     * In caso di successo, azzera la cassa per la transazione successiva.
+     * Restituisce il resto in euro.
+     *
+     * Restituisce -1.0 se il pagamento è insufficiente.
+     * Dopo un pagamento completo, la cassa viene azzerata.
      */
     public double calcolaResto() {
-        if (importoRicevuto < totale) {
-            return -1.0; // Pagamento insufficiente
+        if (totaleCentesimi == 0 ||
+                importoRicevutoCentesimi < totaleCentesimi) {
+            return PAGAMENTO_INSUFFICIENTE;
         }
 
-        double resto = importoRicevuto - totale;
+        long restoCentesimi =
+                importoRicevutoCentesimi - totaleCentesimi;
+
         reset();
-        return resto;
+
+        return restoCentesimi / 100.0;
     }
 
     /**
-     * Ripristina la cassa allo stato iniziale per una nuova spesa.
+     * Restituisce l'importo ricevuto in euro.
      */
-    public void reset() {
-        this.totale = 0.0;
-        this.importoRicevuto = 0.0;
+    public double getImportoRicevuto() {
+        return importoRicevutoCentesimi / 100.0;
     }
 
-    // Esempio di utilizzo della classe
-    public static void main(String[] args) {
-        CassaAutomatica cassa = new CassaAutomatica();
+    /**
+     * Azzera la cassa per iniziare una nuova transazione.
+     */
+    public void reset() {
+        totaleCentesimi = 0;
+        importoRicevutoCentesimi = 0;
+    }
 
-        // 1. Scansione dei prodotti
-        cassa.registraPrezzo(3.50);
-        cassa.registraPrezzo(1.20);
-        cassa.registraPrezzo(4.80);
+    /**
+     * Controlla che un importo sia positivo e rappresentabile.
+     */
+    private boolean isImportoValido(double importo) {
+        return importo > 0
+                && !Double.isNaN(importo)
+                && !Double.isInfinite(importo);
+    }
 
-        System.out.println("Totale da pagare: €" + cassa.getTotale()); // €9.50
-
-        // 2. Pagamento da parte del cliente (es. banconota da 10 e 2 euro)
-        cassa.riceviPagamento(10.00);
-
-        // Controllo pagamento parziale
-        if (cassa.calcolaResto() == -1.0) {
-            System.out.println("Importo insufficiente. Inserire altro denaro.");
-        }
-
-        cassa.riceviPagamento(2.00); // Inseriti 12.00€ in totale
-
-        // 3. Calcolo e consegna del resto
-        double resto = cassa.calcolaResto();
-        if (resto >= 0) {
-            System.out.println("Pagamento effettuato. Resto restituito: €" + resto);
-        }
+    /**
+     * Converte un importo in euro nei corrispondenti centesimi.
+     */
+    private long convertiInCentesimi(double importo) {
+        return Math.round(importo * 100);
     }
 }
