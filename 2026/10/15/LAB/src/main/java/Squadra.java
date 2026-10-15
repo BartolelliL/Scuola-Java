@@ -9,6 +9,12 @@ public class Squadra {
         this.goalFatti = goalFatti;
     }
 
+    // questo è il copy constructor
+    // quando una classe nuova deve essere create con
+    // new Classe(...), se si deve fare la copia di una classe già esistente
+    // allora si può inserire, al posto dei parametri,
+    // la classe di riferimento che vogliamo copiare, con type hint: Classe
+
     public Squadra(Squadra altra) {
         this(altra.nome, altra.goalFatti);
     }

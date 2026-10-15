@@ -2,7 +2,9 @@ public class Main {
     public static void main(String[] args) {
         Squadra s1 = new Squadra("Leoni", 12);
 
-        Squadra s2 = new Squadra(s1.getNome(), s1.getGoalFatti());
+        // implementazione del copy constructor
+        // dove 'altra' ha come type hint: Squadra
+        Squadra s2 = new Squadra(s1);
 
         s2.setGoalFatti(20);
 
