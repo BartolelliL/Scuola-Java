@@ -38,17 +38,18 @@ public class Squadra {
     @Override
     public boolean equals(Object oggetto) {
         if (this == oggetto) {
+            // se sono uguali true
             return true;
         }
         if (!(oggetto instanceof Squadra altra)) {
+            // se sono due tipi diversi false
             return false;
         }
+
+        // alla fine, confronta i goal fatti e i nomi
+        // con equals originale, e se tutti e due coincidono
+        // restituisce true
         return goalFatti == altra.goalFatti
                 && Objects.equals(nome, altra.nome);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(nome, goalFatti);
     }
 }

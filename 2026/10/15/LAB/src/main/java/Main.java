@@ -17,5 +17,6 @@ public class Main {
         // di conseguenza cambiare una significa cambiare anche l'altra.
         // adesso l'equals restituisce TRUE e non FALSE come prima,
         // poichè bisognava fare un override del metodo equals
+        // che precedentemente confrontava gli indirizzi in memoria
     }
 }
